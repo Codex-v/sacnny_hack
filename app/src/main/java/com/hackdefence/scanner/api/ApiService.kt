@@ -12,6 +12,6 @@ interface ApiService {
     @POST("api/scanner/login")
     suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
 
-    @POST("api/admin/entry/verify")
+    @POST("api/scanner/entry/verify")
     suspend fun verifyEntry(@Body request: VerifyEntryRequest): Response<VerifyEntryResponse>
 }

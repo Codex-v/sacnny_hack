@@ -16,6 +16,7 @@ class PreferencesManager(private val context: Context) {
         val SCANNER_CODE = stringPreferencesKey("scanner_code")
         val STAFF_NAME = stringPreferencesKey("staff_name")
         val ASSIGNED_TO = stringPreferencesKey("assigned_to")
+        val AUTH_TOKEN = stringPreferencesKey("auth_token")
     }
 
     val scannerCode: Flow<String?> = context.dataStore.data.map { preferences ->
@@ -30,11 +31,16 @@ class PreferencesManager(private val context: Context) {
         preferences[ASSIGNED_TO]
     }
 
-    suspend fun saveScannerInfo(code: String, name: String, assignedTo: String?) {
+    val authToken: Flow<String?> = context.dataStore.data.map { preferences ->
+        preferences[AUTH_TOKEN]
+    }
+
+    suspend fun saveScannerInfo(code: String, name: String, assignedTo: String?, token: String?) {
         context.dataStore.edit { preferences ->
             preferences[SCANNER_CODE] = code
             preferences[STAFF_NAME] = name
             assignedTo?.let { preferences[ASSIGNED_TO] = it }
+            token?.let { preferences[AUTH_TOKEN] = it }
         }
     }
 

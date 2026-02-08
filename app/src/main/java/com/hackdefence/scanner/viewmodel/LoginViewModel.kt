@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hackdefence.scanner.api.RetrofitClient
 import com.hackdefence.scanner.data.LoginRequest
 import com.hackdefence.scanner.utils.PreferencesManager
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -34,12 +35,14 @@ class LoginViewModel(private val preferencesManager: PreferencesManager) : ViewM
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
                     if (body.success && body.scanner != null) {
-                        // Save to preferences
+                        // Save to preferences and set auth token
                         preferencesManager.saveScannerInfo(
                             code = body.scanner.scanner_code,
                             name = body.scanner.staff_name,
-                            assignedTo = body.scanner.assigned_to
+                            assignedTo = body.scanner.assigned_to,
+                            token = body.token
                         )
+                        RetrofitClient.authToken = body.token
                         _loginState.value = LoginState.Success(
                             body.scanner.staff_name,
                             body.scanner.assigned_to

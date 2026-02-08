@@ -5,14 +5,15 @@ import com.hackdefence.scanner.data.AttendeeDetails
 
 object TicketColorHelper {
     // Color definitions based on ticket type and price
-    private val VIP_1899_COLOR = Color(0xFF4CAF50) // Green
-    private val VIP_1199_COLOR = Color(0xFFF44336) // Red
-    private val STANDARD_COLOR = Color(0xFF2196F3) // Blue
-    private val MEDIA_PARTNER_COLOR = Color(0xFF9C27B0) // Purple
-    private val HIRING_PARTNER_COLOR = Color(0xFFFF9800) // Orange
-    private val COLLABORATOR_COLOR = Color(0xFF00BCD4) // Light Blue
-    private val FREE_COLOR = Color(0xFF212121) // Black
-    private val DEFAULT_COLOR = Color(0xFF757575) // Grey
+    private val STANDARD_COLOR = Color(0xFF2196F3)        // Blue (0-899)
+    private val VIP_EARLY_BIRD_COLOR = Color(0xFFF44336)  // Red (>899, <=1199)
+    private val VIP_PREMIUM_COLOR = Color(0xFFD32F2F)     // Dark Red (>1199)
+    private val MEDIA_PARTNER_COLOR = Color(0xFF9C27B0)   // Purple
+    private val HIRING_PARTNER_COLOR = Color(0xFFFF9800)  // Orange
+    private val COLLABORATOR_COLOR = Color(0xFF00BCD4)    // Sky Blue
+    private val SPECIAL_REG_COLOR = Color(0xFF212121)     // Black (special registrations)
+    private val FREE_COLOR = Color(0xFF212121)            // Black
+    private val DEFAULT_COLOR = Color(0xFF757575)         // Grey
 
     data class TicketColorInfo(
         val backgroundColor: Color,
@@ -28,7 +29,7 @@ object TicketColorHelper {
         val ticketType = details.ticket_type?.lowercase() ?: ""
         val userType = details.user_type?.lowercase() ?: ""
         val price = details.final_price ?: 0.0
-        val participationMode = details.participation_mode?.lowercase() ?: ""
+        val registrationId = details.registration_id.lowercase()
 
         // Determine ticket category and color
         return when {
@@ -50,8 +51,8 @@ object TicketColorHelper {
                 )
             }
 
-            // Collaborator - Light Blue
-            ticketType.contains("collaborator") -> {
+            // Collaborator - Sky Blue
+            ticketType.contains("collaborator") || registrationId.startsWith("hdcol-") -> {
                 TicketColorInfo(
                     COLLABORATOR_COLOR,
                     "COLLABORATOR",
@@ -59,34 +60,42 @@ object TicketColorHelper {
                 )
             }
 
-            // VIP Tickets with specific prices
+            // Special Registration - Black
+            registrationId.startsWith("hdsp-") || ticketType.contains("special") -> {
+                TicketColorInfo(
+                    SPECIAL_REG_COLOR,
+                    "SPECIAL REGISTRATION",
+                    if (price > 0) String.format("₹%.0f", price) else "Free Entry"
+                )
+            }
+
+            // VIP Tickets - price-based coloring
             ticketType.contains("vip") -> {
                 when {
-                    price == 1899.0 -> TicketColorInfo(
-                        VIP_1899_COLOR,
-                        "VIP TICKET",
-                        "₹1899 Premium"
+                    price > 1199 -> TicketColorInfo(
+                        VIP_PREMIUM_COLOR,
+                        "VIP PREMIUM",
+                        String.format("₹%.0f", price)
                     )
-                    price == 1199.0 -> TicketColorInfo(
-                        VIP_1199_COLOR,
-                        "VIP TICKET",
-                        "₹1199 Early Bird"
+                    price > 899 -> TicketColorInfo(
+                        VIP_EARLY_BIRD_COLOR,
+                        "VIP EARLY BIRD",
+                        String.format("₹%.0f", price)
                     )
                     price == 0.0 -> TicketColorInfo(
                         FREE_COLOR,
                         "VIP TICKET",
                         "Free Entry"
                     )
-                    // Any other VIP price → RED
                     else -> TicketColorInfo(
-                        VIP_1199_COLOR,
+                        VIP_EARLY_BIRD_COLOR,
                         "VIP TICKET",
                         String.format("₹%.0f", price)
                     )
                 }
             }
 
-            // Standard Tickets - Blue
+            // Standard Tickets (0-899) - Blue
             ticketType.contains("standard") -> {
                 if (price == 0.0) {
                     TicketColorInfo(
@@ -103,7 +112,7 @@ object TicketColorHelper {
                 }
             }
 
-            // Free tickets (not collaborator/standard/special categories) - Black
+            // Free tickets - Black
             price == 0.0 -> {
                 TicketColorInfo(
                     FREE_COLOR,

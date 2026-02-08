@@ -92,6 +92,7 @@ class ScannerViewModel(private val preferencesManager: PreferencesManager) : Vie
     fun logout() {
         viewModelScope.launch {
             preferencesManager.clearScannerInfo()
+            RetrofitClient.authToken = null
             _scanState.value = ScanState.Idle
             _scanCount.value = 0
         }

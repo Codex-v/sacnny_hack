@@ -72,7 +72,7 @@ object TicketColorHelper {
             // VIP Tickets - price-based coloring
             ticketType.contains("vip") -> {
                 when {
-                    price > 1199 && price <= 1899 -> TicketColorInfo(
+                    price > 1199 -> TicketColorInfo(
                         VIP_GREEN_COLOR,
                         "VIP",
                         String.format("₹%.0f", price)
@@ -83,7 +83,7 @@ object TicketColorHelper {
                         String.format("₹%.0f", price)
                     )
                     price == 0.0 -> TicketColorInfo(
-                        FREE_COLOR,
+                        VIP_RED_COLOR,
                         "VIP TICKET",
                         "Free Entry"
                     )

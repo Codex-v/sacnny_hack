@@ -6,8 +6,8 @@ import com.hackdefence.scanner.data.AttendeeDetails
 object TicketColorHelper {
     // Color definitions based on ticket type and price
     private val STANDARD_COLOR = Color(0xFF2196F3)        // Blue (0-899)
-    private val VIP_EARLY_BIRD_COLOR = Color(0xFFF44336)  // Red (>899, <=1199)
-    private val VIP_PREMIUM_COLOR = Color(0xFFD32F2F)     // Dark Red (>1199)
+    private val VIP_RED_COLOR = Color(0xFFF44336)           // Red (>899, <=1199)
+    private val VIP_GREEN_COLOR = Color(0xFF4CAF50)        // Green (>1199, <=1899)
     private val MEDIA_PARTNER_COLOR = Color(0xFF9C27B0)   // Purple
     private val HIRING_PARTNER_COLOR = Color(0xFFFF9800)  // Orange
     private val COLLABORATOR_COLOR = Color(0xFF00BCD4)    // Sky Blue
@@ -72,14 +72,14 @@ object TicketColorHelper {
             // VIP Tickets - price-based coloring
             ticketType.contains("vip") -> {
                 when {
-                    price > 1199 -> TicketColorInfo(
-                        VIP_PREMIUM_COLOR,
-                        "VIP PREMIUM",
+                    price > 1199 && price <= 1899 -> TicketColorInfo(
+                        VIP_GREEN_COLOR,
+                        "VIP",
                         String.format("₹%.0f", price)
                     )
-                    price > 899 -> TicketColorInfo(
-                        VIP_EARLY_BIRD_COLOR,
-                        "VIP EARLY BIRD",
+                    price > 899 && price <= 1199 -> TicketColorInfo(
+                        VIP_RED_COLOR,
+                        "VIP",
                         String.format("₹%.0f", price)
                     )
                     price == 0.0 -> TicketColorInfo(
@@ -88,7 +88,7 @@ object TicketColorHelper {
                         "Free Entry"
                     )
                     else -> TicketColorInfo(
-                        VIP_EARLY_BIRD_COLOR,
+                        VIP_RED_COLOR,
                         "VIP TICKET",
                         String.format("₹%.0f", price)
                     )
